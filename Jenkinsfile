@@ -9,7 +9,7 @@ pipeline {
                 script {
 
                     checkBranch()
-
+/*
                     sayHello("Amigo")
 
                     def result1 = calculator.add(5, 3)
@@ -17,6 +17,7 @@ pipeline {
 
                     echo "5 + 3 = ${result1}"
                     echo "4 * 2 = ${result2}"
+*/
                 }
             }
         }
