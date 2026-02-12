@@ -7,8 +7,6 @@ pipeline {
         stage('Test Shared Library') {
             steps {
                 script {
-
-                    checkBranch()
                     sayHello("Amigo")
 
                     def result1 = calculator.add(5, 3)
