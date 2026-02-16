@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Build') {
+            steps {
+                echo "Building the application..."
+                sh 'echo Build successful'
+            }
+        }
+
+	stage('Approval') {
+	    steps {
+	        script {
+	            def userInput = input(
+	                message: 'Proceed to deploy?',
+	                parameters: [
+	                    choice(name: 'Environment', choices: ['dev', 'staging', 'prod'], description: 'Select environment')
+	                ]
+	            )
+	            echo "Deploying to ${userInput}"
+	        }
+	    }
+	}
+
+        stage('Deploy') {
+            steps {
+                echo "Deploying application..."
+                sh 'echo Deployment completed'
+            }
+        }
+    }
+}
