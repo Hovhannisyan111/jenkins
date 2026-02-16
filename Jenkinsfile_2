@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        DEPLOY_APPROVED = "false"
+    }
+
     stages {
 
         stage('Build') {
@@ -12,31 +16,39 @@ pipeline {
         stage('Approval') {
             steps {
                 script {
-                    def userChoice = input(
-                        message: 'Deploy application?',
-                        parameters: [
-                            choice(
-                                name: 'Deploy',
-                                choices: ['Yes', 'No'],
-                                description: 'Select Yes to deploy'
+                    try {
+                        timeout(time: 2, unit: 'MINUTES') {
+                            def userChoice = input(
+                                message: 'Deploy application?',
+                                parameters: [
+                                    choice(
+                                        name: 'Deploy',
+                                        choices: ['Yes', 'No'],
+                                        description: 'Select Yes to deploy'
+                                    )
+                                ]
                             )
-                        ]
-                    )
 
-                    if (userChoice == 'No') {
-                        echo "Deployment skipped by user."
-                        currentBuild.result = 'SUCCESS'
-                        return
+                            if (userChoice == 'Yes') {
+                                env.DEPLOY_APPROVED = "true"
+                            } else {
+                                echo "Deployment skipped by user."
+                            }
+                        }
+                    } catch (err) {
+                        echo "No input received. Skipping deployment."
                     }
                 }
             }
         }
 
         stage('Deploy') {
+            when {
+                expression { env.DEPLOY_APPROVED == "true" }
+            }
             steps {
                 echo "Deploying..."
             }
         }
     }
 }
-
