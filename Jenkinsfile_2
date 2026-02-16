@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Build') {
+            steps {
+                echo "Building..."
+            }
+        }
+
+        stage('Approval') {
+            steps {
+                script {
+                    def userChoice = input(
+                        message: 'Deploy application?',
+                        parameters: [
+                            choice(
+                                name: 'Deploy',
+                                choices: ['Yes', 'No'],
+                                description: 'Select Yes to deploy'
+                            )
+                        ]
+                    )
+
+                    if (userChoice == 'No') {
+                        echo "Deployment skipped by user."
+                        currentBuild.result = 'SUCCESS'
+                        return
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "Deploying..."
+            }
+        }
+    }
+}
+
